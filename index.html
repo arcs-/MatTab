@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+    <title>New Tab</title>
+
+    <!--
+
+_________ __  .__.__  .__  .__                   __
+/   _____//  |_|__|  | |  | |  |__ _____ ________/  |_
+\_____  \\   __\  |  | |  | |  |  \\__  \\_  __ \   __\
+/        \|  | |  |  |_|  |_|   Y  \/ __ \|  | \/|  |
+/_______  /|__| |__|____/____/___|  (____  /__|   |__|
+
+Giant ascii art in your source is how you show that you care.
+I hand coded each of these characters on this page and I did my
+best to make them look nice.
+
+I hope you enjoy looking at my code, if you find an error
+hit me up somewhere. :D
+
+-->
+
+  </head>
+  <body>
+
+    <!-- BUTTON -->
+
+    <div class="fixed-action-btn horizontal" id="menu">
+      <a class="btn-floating btn-large waves-effect waves-light red modal-trigger" href="#addModal">
+        <i class="large material-icons" id="addButton">add</i>
+      </a>
+      <ul>
+        <li>
+          <a class="btn-floating waves-effect waves-light blue modal-trigger" href="#settingsModal">
+            <i class="material-icons">settings</i>
+          </a>
+        </li>
+        <li>
+          <a class="btn-floating waves-effect waves-light amber darken-3" id="appsLink">
+            <i class="material-icons">apps</i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- MODAL -->
+    <div id="addModal" class="modal">
+      <div class="modal-content">
+        <h4>Add Tile</h4>
+
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="material-icons prefix">add_to_queue</i>
+            <input id="new_website_link" placeholder="google.com" type="text">
+            <label for="new_website_link" data-error="This is not a Website">Website</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s12">
+            <div class="card preview">
+              <div class="card-image tile" id="preview_container">
+                <img id="preview_image" src="">
+                <span id="preview_title" class="card-title truncate"></span>
+              </div>
+
+              <input type="color" id="tileColor" class="colorButton fixColor z-depth-3"></input>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s12">
+            <a class="waves-effect waves-light btn right" id="definitelyAdd">
+              <i class="material-icons left">add</i>Add</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+      <div class="modal-content">
+        <h4>Settings</h4>
+
+        <!-- import & export -->
+
+        <div class="row">
+          <div class="col s6">
+            <a class="waves-effect waves-light btn-flat full" id="export">
+              <i class="material-icons left">file_download</i>Export</a>
+          </div>
+          <div class="col s6">
+            <div class="file-field">
+              <div class="btn-flat full">
+                <i class="material-icons left">file_upload</i>Import
+                <input type="file" accept=".json" id="import">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- feed -->
+
+        <div class="row">
+          <div class="col s12">
+            <b class="teal-text">RSS / Atom Feeds</b>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s6">
+
+            <input type="checkbox" id="loadFeeds" />
+            <label for="loadFeeds">Load Feeds</label>
+
+          </div>
+        </div>
+
+        <!-- Backgronud -->
+
+        <div class="row">
+          <div class="col s12">
+            <b class="teal-text">Background</b>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s6">
+
+            <input type="checkbox" id="useBgImage"/>
+            <label for="useBgImage">Use Wallpaper</label>
+
+          </div>
+          <div class="col s6">
+
+            <input type="color" id="bgColor" class="colorButton" depends="!useBgImage"></input>
+            <label for="bgColor">Background Color</label>
+
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s12">
+
+            <input type="checkbox" id="useUnplash" depends="useBgImage"/>
+            <label for="useUnplash">Pick a random picture every hour</label>
+
+          </div>
+        </div>
+
+        <div class="file-field input-field">
+          <div class="btn" depends="[useBgImage,!useUnplash]">
+            <span>
+              <i class="material-icons">image</i>
+            </span>
+            <input type="file" accept="image/*" id="bgFile" depends="[useBgImage,!useUnplash]">
+          </div>
+          <div class="file-path-wrapper">
+            <input class="file-path" type="text" placeholder="upload a wallpaper" id="bgPath" readonly>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- color Modal -->
+
+    <div id="colorModal" class="modal">
+      <div class="modal-content">
+        <h4>Pick a Color</h4>
+        <div class="color-picker"></div>
+      </div>
+    </div>
+
+    <!-- Tiles -->
+
+    <div class="middle">
+      <div class="row" id="tileContainer">
+
+        <div class="col s6 m4 l2 movable" id="template" style="display: none">
+
+          <div class="card">
+
+            <a href="#" class="template-link">
+              <div class="card-image tile template-card">
+                <img class="template-icon" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+                <span class="card-title truncate template-title"></span>
+              </div>
+            </a>
+
+            <div class="card-reveal">
+              <i class="card-title material-icons right">close</i>
+              <div class="template-rss"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- color picker -->
+    <div class="color-picker z-depth-4" style="display:none"></div>
+
+    <!-- credits -->
+
+    <a href="http://pixelfox.rocks" id="credit">
+        wallpaper by <span class="author">Gérardine Dellsperger</span>
+    </div>
+
+  </body>
+
+  <link rel=stylesheet type=text/css href=css/style.css>
+
+  <script type=text/javascript src=js/jquery-3.3.1.min.js></script>
+  <script type=text/javascript src=js/jquery.jfeed.js></script>
+  <script type=text/javascript src=js/materialize.min.js></script>
+  <script type=text/javascript src=js/background-color-theif.js></script>
+  <script type=text/javascript src=js/colorPicker.js></script>
+  <script type=text/javascript src=js/Sortable.min.js></script>
+  <script type=text/javascript src=js/webglimpse.js></script>
+  <script type=text/javascript src=js/input-dependency.js></script>
+  <script type=text/javascript src=js/addTile.js async></script>
+  <script type=text/javascript src=js/init.js></script>
+
+</html>
