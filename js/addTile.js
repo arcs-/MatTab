@@ -34,7 +34,7 @@ $(document).ready(function(){
         minLength: 2,
         onAutocomplete: val => $input
             .val(topSites[val])
-            .trigger('keyup')
+            .trigger('input')
       })
     })
 
@@ -43,6 +43,11 @@ $(document).ready(function(){
 
         // if "enter" was presed
         if(e.keyCode === 13 && !$definitelyAdd.hasClass('disabled')) return $definitelyAdd.click()
+        
+      })
+
+    $input
+      .on('input', function (e) {
 
         resetPreview()
 

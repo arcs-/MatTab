@@ -21,7 +21,7 @@
     'image_src', 'apple-touch-icon', 'og:image', '114x114', 'image/x-icon', 'apple-touch-icon-precomposed', 'fluid-icon',
     'previewIcon', 'msapplication-square32x32logo'
   ]
-  var META_IMAGES_SECOND = ['shortcut icon', 'icon', '32x32']
+  var META_IMAGES_SECOND = ['icon', 'shortcut icon', '32x32']
   var FILTER_IMAGE_TAG = function(rawDoc) {
     let rawImage = rawDoc.match(/<img[^>]*>/g)
     if (rawImage)
@@ -51,7 +51,7 @@
     var websiteData = {}
     websiteData.input = url
 
-    if (!url.startsWith('http')) url = 'http://' + url.trim()
+    if (!url.startsWith('http')) url = 'https://' + url.trim()
     websiteData.url = url
 
     var prop_url = stringToURL(url).hostname.replace('www.', '')
@@ -69,7 +69,14 @@
       if (!rawDoc) return reject(websiteData)
 
       let rawMeta = rawDoc.match(/(<meta[^>]*>)|(<link[^>]*>)/g)
-      if (!rawMeta) return reject(websiteData)
+      if (!rawMeta) {
+        // no meta data
+
+        websiteData.title = stringToURL(url).hostname
+
+        return resolve(websiteData)
+      }
+
 
       let meta = rawMeta.reduce((result, match) => {
         var $match = $(match)
@@ -106,13 +113,13 @@
 			if (colorKey) websiteData.color = meta[colorKey]
 			// if no color, find one based on image
 
-			if(!websiteData.iconLink) websiteData.iconLink = websiteData.url + "favicon.png"
+			if(!websiteData.iconLink) websiteData.iconLink = websiteData.url + "favicon.ico"
 
       loadImage(websiteData.iconLink, websiteData.color)
         .then(res => {
 
   				websiteData.icon = res.image
-  				if(res.color) websiteData.color = res.color
+          websiteData.color = res.color
   				resolve(websiteData)
 
   			})

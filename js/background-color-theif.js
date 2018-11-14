@@ -135,12 +135,15 @@ BackgroundColorTheif.prototype.getPalette = function(sourceImage, colorCount, qu
     var pixelArray = [];
     var pixelsNum = [];
     pixelCount = heightLimit * image.getWidth();
+
     for (var i = 0, offset, r, g, b, a; i < pixelCount; i = i + quality) {
+
         offset = i * 4;
-        r = pixels[offset + 0];
-        g = pixels[offset + 1];
-        b = pixels[offset + 2];
-        a = pixels[offset + 3];
+        let r = pixels[offset + 0];
+        let g = pixels[offset + 1];
+        let b = pixels[offset + 2];
+        let a = pixels[offset + 3];
+
         // If pixel is mostly opaque and not white
         if (a >= 125) {
                 pixelArray.push([r, g, b]);
@@ -230,10 +233,11 @@ BackgroundColorTheif.prototype.getPalette = function(sourceImage, colorCount, qu
 
     }
 
-    //image.markPixels(pixelsNum);
+    image.markPixels(pixelsNum);
     // Send array to quantize function which clusters values
     // using median cut algorithm
     var cmap    = MMCQ.quantize(pixelArray, colorCount);
+
     if(!cmap) {
       image.removeCanvas();
       throw 'Something went Wrong';
@@ -425,7 +429,7 @@ var MMCQ = (function() {
                 if (ntot) {
                     vbox._avg = [~~(rsum/ntot), ~~(gsum/ntot), ~~(bsum/ntot)];
                 } else {
-//                    console.log('empty box');
+
                     vbox._avg = [
                         ~~(mult * (vbox.r1 + vbox.r2 + 1) / 2),
                         ~~(mult * (vbox.g1 + vbox.g2 + 1) / 2),
@@ -625,7 +629,7 @@ var MMCQ = (function() {
                     // set dimensions
                     vbox1[dim2] = d2;
                     vbox2[dim1] = vbox1[dim2] + 1;
-//                    console.log('vbox counts:', vbox.count(), vbox1.count(), vbox2.count());
+
                     return [vbox1, vbox2];
                 }
             }
@@ -640,7 +644,6 @@ var MMCQ = (function() {
     function quantize(pixels, maxcolors) {
         // short-circuit
         if (!pixels.length || maxcolors < 2 || maxcolors > 256) {
-//            console.log('wrong number of maxcolors');
             return false;
         }
 

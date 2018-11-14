@@ -111,7 +111,7 @@ tiles
 .card {
   user-select: none;
   overflow: hidden;
-  background-color: transparent;
+  background-color: rgb(24, 25, 27);
 }
 .card .card-reveal {
   padding: 0 4px 0 14px;
