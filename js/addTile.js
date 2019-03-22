@@ -43,7 +43,7 @@ $(document).ready(function(){
 
         // if "enter" was presed
         if(e.keyCode === 13 && !$definitelyAdd.hasClass('disabled')) return $definitelyAdd.click()
-        
+
       })
 
     $input
@@ -58,7 +58,7 @@ $(document).ready(function(){
         WebGlimpse
            .get(input)
            .then(info => {
-
+console.log(info)
              if($input.val().trim() != info.input) return
              if(!info.title) info.title = info.input
 

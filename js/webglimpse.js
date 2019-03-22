@@ -62,7 +62,7 @@
 
     // check preloads
 		var prop_url = stringToURL( url.startsWith( 'http' ) ? url : 'http://' + url ).hostname.replace( 'www.', '' )
-		if ( preLoaded[ prop_url ] ) return resolve( Object.assign( websiteData, preLoaded[ prop_url ] ) )
+		if ( preLoaded[ prop_url ] ) return resolve( Object.assign( websiteData, preLoaded[ prop_url ], {url}) )
 
 		// the data gathering
 		var xhr = new XMLHttpRequest()
