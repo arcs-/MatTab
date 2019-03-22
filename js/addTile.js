@@ -58,7 +58,7 @@ $(document).ready(function(){
         WebGlimpse
            .get(input)
            .then(info => {
-console.log(info)
+
              if($input.val().trim() != info.input) return
              if(!info.title) info.title = info.input
 
