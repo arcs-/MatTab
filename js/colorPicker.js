@@ -6,10 +6,10 @@
 	Have fun with it!
 
   https://codepen.io/Lewitje/pen/zqVaPY
-
+ 
 */
 
-var colorPicker = (function(){
+var colorPicker = (function () {
 
 	var config = {
 		baseColors: [
@@ -32,68 +32,68 @@ var colorPicker = (function(){
 		activeColor: [0, 0, 0]
 	};
 
-	function init(){
+	function init() {
 
-    $('input[type=color]').click(function(e){e.preventDefault()})
+		$('input[type=color]').click(function (e) { e.preventDefault() })
 
-		createColorPicker(function(){
+		createColorPicker(function () {
 			appendBaseColors();
 		});
 
 		addEventListeners();
 
-		setFirstColorActive(function(){
+		setFirstColorActive(function () {
 			setFirstModifiedColorActive();
 		});
 
-    return $('.color-picker')
+		return $('.color-picker')
 	}
 
-	function setActiveBaseColor(el){
+	function setActiveBaseColor(el) {
 		$('.color.active').removeClass('active');
 		el.addClass('active');
 	}
 
-	function setActiveColor(el){
+	function setActiveColor(el) {
 		$('.color-var.active').removeClass('active');
 		el.addClass('active');
 		state.activeColor = el.data('color').split(',');
 	}
 
-	function addEventListeners(){
-		$('body').on('click', '.color', function(){
+	function addEventListeners() {
+		$('body').on('click', '.color', function () {
 			var color = $(this).data('color').split(',');
 			setActiveBaseColor($(this));
 
-			hideVariations(function(){
-				createVariations(color, function(){
-					setDelays(function(){
+			hideVariations(function () {
+				createVariations(color, function () {
+					setDelays(function () {
 						showVariations();
 					});
 				});
 			});
 		});
 
-		$('body').on('click', '.color-var', function(){
+		$('body').on('click', '.color-var', function () {
 			setActiveColor($(this));
-      $('.color-picker').attr('color', 'rgb(' + state.activeColor + ')')
-      $('.color-picker').trigger('color')
+			$('.color-picker').attr('color', 'rgb(' + state.activeColor + ')')
+			$('.color-picker').trigger('color')
 
 		});
 	}
 
-	function setFirstColorActive(callback){
+	function setFirstColorActive(callback) {
 		$('.color').eq(1).trigger('click');
 		callback();
 	}
 
-	function setFirstModifiedColorActive(){
-		setTimeout(function(){
+	function setFirstModifiedColorActive() {
+		setTimeout(function () {
 			$('.color-var').eq(7).trigger('click');
 		}, 500);
 	}
 
-	function createColorPicker(callback){
+	function createColorPicker(callback) {
 		$('.color-picker').append('<div class="base-colors"></div>');
 		$('.color-picker').append('<div class="varied-colors"></div>');
 		$('.color-picker').append('<div class="active-color"></div>');
@@ -102,24 +102,24 @@ var colorPicker = (function(){
 		callback();
 	}
 
-	function appendBaseColors(){
-		for(i = 0; i < config.baseColors.length; i++){
+	function appendBaseColors() {
+		for (i = 0; i < config.baseColors.length; i++) {
 			$('.base-colors').append('<div class="color" data-color="' + config.baseColors[i].join() + '" style="background-color: rgb(' + config.baseColors[i].join() + ');"></div>');
 		}
 	};
 
-	function createVariations(color, callback){
+	function createVariations(color, callback) {
 		$('.varied-colors').html('');
 
-		for(var i = 0; i < config.variationTotal; i++){
+		for (var i = 0; i < config.variationTotal; i++) {
 			var newColor = [];
 
-			for (var x = 0; x < color.length; x++){
+			for (var x = 0; x < color.length; x++) {
 				var modifiedColor = (Number(color[x]) - 100) + (config.lightModifier * i);
 
-				if(modifiedColor <= 0){
+				if (modifiedColor <= 0) {
 					modifiedColor = 0;
-				} else if (modifiedColor >= 255){
+				} else if (modifiedColor >= 255) {
 					modifiedColor = 255;
 				}
 
@@ -132,8 +132,8 @@ var colorPicker = (function(){
 		callback();
 	}
 
-	function setDelays(callback){
-		$('.color-var').each(function(x){
+	function setDelays(callback) {
+		$('.color-var').each(function (x) {
 			$(this).css({
 				'transition': 'transform ' + (config.transitionDuration / 1000) + 's ' + ((config.transitionDelay / 1000) * x) + 's'
 			});
@@ -142,21 +142,21 @@ var colorPicker = (function(){
 		callback();
 	}
 
-	function showVariations(){
-		setTimeout(function(){
+	function showVariations() {
+		setTimeout(function () {
 			$('.color-var').addClass('visible');
-		},(config.transitionDelay * config.variationTotal));
+		}, (config.transitionDelay * config.variationTotal));
 	}
 
-	function hideVariations(callback){
+	function hideVariations(callback) {
 		$('.color-var').removeClass('visible').removeClass('active');
 
-		setTimeout(function(){
+		setTimeout(function () {
 			callback();
-		},(config.transitionDelay * config.variationTotal));
+		}, (config.transitionDelay * config.variationTotal));
 	}
 
-	return{
+	return {
 		init: init
 	};
 

@@ -57,18 +57,11 @@ canvas {
 .autocomplete-content {position: absolute}
 
 #credit {
-  position: absolute;
-  bottom: 0;
   padding: 2px 4px;
-  color: #808080;
-
-  backdrop-filter: blur(2px);
-  background: rgba(167, 167, 167, 0.3);
-  border-top-right-radius: 2px;
+  color: #bbb;
 }
-
 #credit a {
-  color: #808080;
+  color: #bbb;
 }
 
 /*
@@ -133,7 +126,7 @@ tiles
 .card-image.tile {
   height: 150px;
   overflow: hidden;
-  /*background: #18191b;*/
+  padding: 5px;
 }
 
 .card-image.tile img{

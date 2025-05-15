@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
 	var $tileContainer = $("#tileContainer")
 	$tileContainer.on("addition", load)
@@ -7,8 +7,6 @@ $(document).ready(function() {
 	/*
 	Background stuff
 	*/
-	var currentBackground
-
 	if (localStorage.getItem("useUnplash") === "true" &&
 		localStorage.getItem("useBgImage") === "true") {
 
@@ -40,38 +38,47 @@ $(document).ready(function() {
 	}
 
 	/*
- 	first time use
+	  first time use
 	*/
-
 	if (!localStorage.getItem("init")) {
 		localStorage.setItem("init", true)
 		localStorage.setItem("bgColor", "#616161")
-		//localStorage.setItem("bgImage", "img/bg.png") // http://creativecrunk.com/material-design-backgrounds/
 		localStorage.setItem("useBgImage", true)
 		localStorage.setItem("loadFeeds", false)
 		updateBg()
 
-		chrome.topSites.get(function(data) {
+		chrome.topSites.get(function (data) {
 
 			// sneaky
-			data.push({title:"Patrick",	url: "https://stillh.art/"})
+			data.push({ title: "Patrick", url: "https://stillh.art/" })
 
-      $.each(data, (i, site) => {
+			$.each(data, (i, site) => {
+				chrome.runtime.sendMessage(
+					{ action: "getWebGlimpse", url: site.url },
+					async (response) => {
+						if (!response || !response.success) return
 
-				WebGlimpse.get(site.url)
-					 .then(info => {
+						const info = response.data
+						if (info.iconLink) {
+							try {
+								const res = await loadImage(info.iconLink, info.color)
+								info.icon = res.image
+								info.color = res.color
+							} catch (e) {
+								console.warn("no valid image", e);
+							}
+						}
 
-						 var tiles = JSON.parse(localStorage.getItem("tiles")) || []
-			       tiles.push(info)
-			       localStorage.setItem("tiles", JSON.stringify(tiles))
+						var tiles = JSON.parse(localStorage.getItem("tiles")) || []
+						tiles.push(info)
+						localStorage.setItem("tiles", JSON.stringify(tiles))
 
-			       load()
+						load()
+					}
+				)
+			})
 
-					 })
-
-      })
-
-    })
+		})
 
 
 	} else {
@@ -116,7 +123,7 @@ $(document).ready(function() {
 			var luma = 0.2126 * color[0] + 0.7152 * color[1] + 0.0722 * color[2] // per ITU-R BT.709
 
 			/*
- 				-> title
+					-> title
 			*/
 			if (!tile.icon || tile.icon == "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7") $container
 				.find('.template-title')
@@ -125,7 +132,7 @@ $(document).ready(function() {
 				.css('color', luma < 130 ? '#fff' : '#000')
 
 			/*
-	 			-> icon
+					-> icon
 			*/
 			$container.find('.template-icon').first().attr("src", tile.icon || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")
 
@@ -142,10 +149,10 @@ $(document).ready(function() {
 			/*
 				-> feed
 			*/
-			if (localStorage.getItem("loadFeeds") === "true") setTimeout(function() {
+			if (localStorage.getItem("loadFeeds") === "true") setTimeout(function () {
 				$.getFeed({
 					url: tile.rss,
-					success: function(feed) {
+					success: function (feed) {
 
 						if (feed.items.length === 0) return
 
@@ -176,14 +183,14 @@ $(document).ready(function() {
 	// fix for dragging tiles into the nav bar
 	//
 
-	$('body').bind("dragleave", function(evt) {
-    if (evt.originalEvent.clientX || evt.originalEvent.clientY) return
-    window.leftWindow = true
+	$('body').bind("dragleave", function (evt) {
+		if (evt.originalEvent.clientX || evt.originalEvent.clientY) return
+		window.leftWindow = true
 
 		evt.type = 'dragend'
 		mainTiles.handleEvent.call(mainTiles, evt)
 
- 	})
+	})
 
 	var mainTiles = Sortable.create($tileContainer[0], {
 		group: 'tiles',
@@ -194,26 +201,26 @@ $(document).ready(function() {
 			dataTransfer.setData('url', dragEl.firstElementChild.firstElementChild.href)
 		},
 
-		onStart: function(evt) {
+		onStart: function (evt) {
 			$('#addButton')
 				.html('delete')
 				.parent()
 				.addClass('pulse')
 		},
 
-		onEnd: function(evt) {
+		onEnd: function (evt) {
 
-			if(window.leftWindow){
+			if (window.leftWindow) {
 				window.leftWindow = false
 
-				var itemToReset = mainTiles.el.children[ evt.newIndex ]
-				var originalPosition = mainTiles.el.children[ evt.oldIndex ]
-		 		var	nextSiblingOriginal = mainTiles.el.children[ evt.oldIndex  + (evt.oldIndex > evt.newIndex ? 1 : 0) ]
+				var itemToReset = mainTiles.el.children[evt.newIndex]
+				var originalPosition = mainTiles.el.children[evt.oldIndex]
+				var nextSiblingOriginal = mainTiles.el.children[evt.oldIndex + (evt.oldIndex > evt.newIndex ? 1 : 0)]
 
- 	 			mainTiles.el.insertBefore(itemToReset, nextSiblingOriginal)
-				mainTiles._animate( originalPosition , itemToReset)
+				mainTiles.el.insertBefore(itemToReset, nextSiblingOriginal)
+				mainTiles._animate(originalPosition, itemToReset)
 
-			} else if(evt.item.parentNode.id == $tileContainer[0].id) {
+			} else if (evt.item.parentNode.id == $tileContainer[0].id) {
 
 				var tiles = JSON.parse(localStorage.getItem("tiles")) || []
 				tiles.move(evt.oldIndex, evt.newIndex)
@@ -243,7 +250,7 @@ $(document).ready(function() {
 		group: 'tiles',
 		draggable: ".movable",
 
-		onAdd: function(e) {
+		onAdd: function (e) {
 
 			var tiles = JSON.parse(localStorage.getItem("tiles"))
 			tiles.splice(e.oldIndex, 1)
@@ -255,7 +262,7 @@ $(document).ready(function() {
 	})
 
 	/* apps */
-	$('#appsLink').click(function() { chrome.tabs.create({ url: 'chrome://apps/' }) })
+	$('#appsLink').click(function () { chrome.tabs.create({ url: 'chrome://apps/' }) })
 
 	/*
 ------------------------------------
@@ -264,10 +271,10 @@ $(document).ready(function() {
 	 */
 
 	$('#settingsModal').modal({
-		complete: function() { $('#bgColor').css('background', localStorage.getItem("bgImage")) }
+		complete: function () { $('#bgColor').css('background', localStorage.getItem("bgImage")) }
 	})
 
-	$('#export').click(function() {
+	$('#export').click(function () {
 
 		let values = {}
 		for (var i = 0, len = localStorage.length; i < len; ++i) {
@@ -282,12 +289,12 @@ $(document).ready(function() {
 
 	})
 
-	$('#import').change(function() {
+	$('#import').change(function () {
 		let file = $(this)[0].files[0]
 		if (!file) return
 
 		let fr = new FileReader
-		fr.onload = function() {
+		fr.onload = function () {
 			let json = JSON.parse(fr.result)
 			for (var key in json) localStorage.setItem(key, json[key])
 			location.reload()
@@ -308,9 +315,9 @@ $(document).ready(function() {
 	// color picker
 	var $colorModal = $('#colorModal').modal()
 	var $picker = colorPicker.init()
-	$('#bgColor').click(function() {
+	$('#bgColor').click(function () {
 		$colorModal.modal('open')
-		$picker.on('color', function(color) {
+		$picker.on('color', function (color) {
 			$colorModal.modal('close')
 			var color = $picker.attr('color')
 			localStorage.setItem("bgColor", color)
@@ -325,10 +332,10 @@ $(document).ready(function() {
 
 })
 
-$('#bgFile').change(function(e) {
+$('#bgFile').change(function (e) {
 	if (this.files && this.files[0]) {
 		var reader = new FileReader()
-		reader.onload = function(e) {
+		reader.onload = function (e) {
 			localStorage.setItem("bgImage", e.target.result)
 			localStorage.setItem("bgPath", $('#bgPath').val())
 			updateBg()
@@ -341,18 +348,18 @@ $('#bgFile').change(function(e) {
 	}
 })
 
-$('#useBgImage').change(function() {
+$('#useBgImage').change(function () {
 	localStorage.setItem("useBgImage", this.checked)
 	updateBg()
 })
 
-$('#useUnplash').change(function() {
+$('#useUnplash').change(function () {
 	localStorage.setItem("useUnplash", this.checked)
 	localStorage.setItem("lastUpdate", 0)
 	updateBg()
 })
 
-$('#loadFeeds').change(function() {localStorage.setItem("loadFeeds", this.checked)})
+$('#loadFeeds').change(function () { localStorage.setItem("loadFeeds", this.checked) })
 
 //$('#download').click(function() {this.href = currentBackground})
 
@@ -362,8 +369,8 @@ $('#loadFeeds').change(function() {localStorage.setItem("loadFeeds", this.checke
 function updateBg() {
 	if (localStorage.getItem("useBgImage") != "true") return $('body').css('background', localStorage.getItem("bgColor"))
 
-	if(localStorage.getItem("bgPath")) $('#credit').hide()
-	else if(localStorage.getItem("bgImage")) {
+	if (localStorage.getItem("bgPath")) $('#credit').hide()
+	else if (localStorage.getItem("bgImage")) {
 		$('#credit').show()
 		$('#credit').attr("href", 'https://picsum.photos/')
 		$('#credit .author').text('Lorem Picsum')
@@ -377,7 +384,7 @@ function updateBg() {
 /*
 	polyfill
 */
-Array.prototype.move = function(old_index, new_index) {
+Array.prototype.move = function (old_index, new_index) {
 	if (new_index >= this.length) {
 		var k = new_index - this.length
 		while ((k--) + 1) this.push(undefined)
